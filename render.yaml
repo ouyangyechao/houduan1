@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: deepseek-car-diagnosis-api
+    env: node
+    region: singapore
+    branch: main
+    # 移除了 root: . 配置，因为代码在根目录时不需要指定
+    
+    # 构建命令
+    buildCommand: npm install
+    
+    # 启动命令
+    startCommand: npm start
+    
+    # 环境变量
+    envVars:
+      - key: NODE_ENV
+        value: production
+    
+    # 使用免费计划
+    plan: free
+    
+    # 自动部署设置
+    autoDeploy: true
+    
+    # 健康检查路径
+    healthCheckPath: /health
