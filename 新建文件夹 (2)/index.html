@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欧阳叶超AI汽车检修系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 开场动画 -->
+    <div id="intro-screen">
+        <div class="logo">欧阳叶超<span>AI汽车检修</span></div>
+        <div class="subtitle">智能诊断 · 精准维修 · 专业服务</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+        <div class="loading-text">正在初始化系统...</div>
+    </div>
+
+    <!-- API状态指示器 -->
+    <div class="api-status connecting" id="api-status">
+        <i class="fas fa-circle"></i> 连接AI服务中...
+    </div>
+
+    <!-- 语音输入指示器 -->
+    <div class="voice-indicator" id="voice-indicator">
+        <div class="voice-pulse">
+            <i class="fas fa-microphone fa-2x"></i>
+        </div>
+        <p>正在聆听...请说话</p>
+    </div>
+
+    <!-- 登录注册页面 -->
+    <div id="page-auth" class="page">
+        <div class="page-content">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">欢迎使用AI汽车检修系统</div>
+                    <div class="page-subtitle">请登录或注册以开始使用</div>
+                </div>
+            </div>
+            <div class="auth-container">
+                <div class="auth-form glass-enhanced floating-card">
+                    <h2 class="auth-title gradient-text">欧阳叶超AI汽车检修</h2>
+                    <p class="auth-subtitle">智能诊断 · 精准维修 · 专业服务</p>
+                    <div class="auth-tabs">
+                        <div class="auth-tab active" id="login-tab">登录</div>
+                        <div class="auth-tab" id="register-tab">注册</div>
+                    </div>
+                    <!-- 错误提示 -->
+                    <div class="error-message" id="auth-error"></div>
+                    <div class="auth-form-content active" id="login-form">
+                        <div class="form-group">
+                            <label class="form-label">手机号</label>
+                            <input type="tel" class="form-input advanced-input" id="login-phone" placeholder="请输入手机号">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">密码</label>
+                            <input type="password" class="form-input advanced-input" id="login-password" placeholder="请输入密码">
+                        </div>
+                        <button class="btn btn-block advanced-btn" id="login-btn">登录</button>
+                    </div>
+                    <div class="auth-form-content" id="register-form">
+                        <div class="form-group">
+                            <label class="form-label">姓名</label>
+                            <input type="text" class="form-input advanced-input" id="register-name" placeholder="请输入姓名">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">手机号</label>
+                            <input type="tel" class="form-input advanced-input" id="register-phone" placeholder="请输入手机号">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">密码</label>
+                            <input type="password" class="form-input advanced-input" id="register-password" placeholder="请输入密码">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">确认密码</label>
+                            <input type="password" class="form-input advanced-input" id="register-confirm" placeholder="请再次输入密码">
+                        </div>
+                        <button class="btn btn-block advanced-btn" id="register-btn">注册</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="navbar" id="navbar" style="display: none;">
+        <div class="logo" style="font-size: 1.5rem; color: var(--dark);">欧阳叶超<span style="color: var(--accent);">AI汽车检修</span></div>
+        <div class="nav-links">
+            <div class="nav-link active" data-page="page-brand">首页</div>
+            <div class="nav-link" data-page="page-profile">个人中心</div>
+            <div class="nav-link" id="logout-btn">退出登录</div>
+        </div>
+    </div>
+
+    <!-- 品牌选择页面 -->
+    <div id="page-brand" class="page">
+        <div class="page-content">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">选择汽车品牌</div>
+                    <div class="page-subtitle">请选择您要诊断的汽车品牌</div>
+                </div>
+            </div>
+            <div class="brands-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input glass-enhanced advanced-input" id="brand-search-input" placeholder="搜索汽车品牌...">
+                </div>
+                <div class="category-tabs">
+                    <div class="category-tab active" data-category="all">全部品牌</div>
+                    <div class="category-tab" data-category="德系">德系</div>
+                    <div class="category-tab" data-category="日系">日系</div>
+                    <div class="category-tab" data-category="美系">美系</div>
+                    <div class="category-tab" data-category="国产">国产</div>
+                    <div class="category-tab" data-category="新能源">新能源</div>
+                    <div class="category-tab" data-category="韩系">韩系</div>
+                </div>
+                <div class="brands-grid" id="brands-grid">
+                    <!-- 品牌卡片将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 车辆信息录入页面 -->
+    <div id="page-vehicle" class="page">
+        <div class="page-content">
+            <div class="page-header">
+                <div>
+                    <button class="back-btn" id="back-to-brands">
+                        <i class="fas fa-arrow-left"></i> 返回品牌选择
+                    </button>
+                </div>
+                <div>
+                    <div class="page-title">车辆信息录入</div>
+                    <div class="page-subtitle">请输入车辆详细信息以开始诊断</div>
+                </div>
+                <div></div> <!-- 占位元素 -->
+            </div>
+            <div class="vehicle-form-container">
+                <div class="vehicle-form glass-enhanced floating-card">
+                    <h2 class="form-title gradient-text">车辆信息</h2>
+                    <p class="form-subtitle">请准确输入车辆信息，系统将基于此进行智能诊断</p>
+                    <div class="selected-brand" id="selected-brand-display">
+                        <!-- 选中的品牌信息将通过JavaScript动态生成 -->
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">VIN码</label>
+                        <div class="input-with-icon">
+                            <input type="text" class="form-input advanced-input" id="vin-input" placeholder="请输入17位车辆识别码">
+                            <button class="voice-input-btn" id="voice-input-btn">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">汽车型号</label>
+                            <select class="form-input advanced-input" id="model-select">
+                                <option value="">请选择型号</option>
+                                <!-- 型号选项将通过JavaScript动态生成 -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">生产年份</label>
+                            <select class="form-input advanced-input" id="year-select">
+                                <option value="">请选择年份</option>
+                                <!-- 年份选项将通过JavaScript动态生成 -->
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-block advanced-btn" id="start-diagnosis-btn">开始AI诊断</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 问题描述页面 -->
+    <div id="page-problem" class="page">
+        <div class="page-content">
+            <div class="page-header">
+                <div>
+                    <button class="back-btn" id="back-to-vehicle">
+                        <i class="fas fa-arrow-left"></i> 返回车辆信息
+                    </button>
+                </div>
+                <div>
+                    <div class="page-title">问题描述</div>
+                    <div class="page-subtitle">请详细描述您遇到的车辆问题</div>
+                </div>
+                <div></div> <!-- 占位元素 -->
+            </div>
+            <div class="problem-form-container">
+                <div class="problem-form glass-enhanced floating-card">
+                    <h2 class="form-title gradient-text">问题描述</h2>
+                    <p class="form-subtitle">请详细描述您遇到的车辆问题，AI助手将为您提供诊断方案</p>
+                    <textarea class="problem-input advanced-input" id="problem-input" placeholder="例如：车辆无法启动、发动机异响、充电故障等..."></textarea>
+                    <div class="suggested-problems">
+                        <div class="suggested-problem">车辆无法启动</div>
+                        <div class="suggested-problem">发动机异响</div>
+                        <div class="suggested-problem">刹车系统故障</div>
+                        <div class="suggested-problem">空调不制冷</div>
+                        <div class="suggested-problem">交流无法充电</div>
+                        <div class="suggested-problem">电池续航下降</div>
+                    </div>
+                    <button class="btn btn-block advanced-btn" id="submit-problem-btn">提交问题并开始诊断</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 聊天诊断页面（AI语音对话界面） -->
+    <div id="page-chat" class="page">
+        <div class="page-content">
+            <div class="chat-container">
+                <div class="chat-main">
+                    <div class="avatar-container">
+                        <div class="avatar" id="ai-avatar"></div>
+                    </div>
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- 聊天消息将通过JavaScript动态生成 -->
+                    </div>
+                    <div class="chat-input-container">
+                        <button class="voice-btn" id="voice-chat-btn" title="语音输入">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 个人中心页面 -->
+    <div id="page-profile" class="page">
+        <div class="page-content">
+            <div class="page-header">
+                <div>
+                    <button class="back-btn" id="back-to-home">
+                        <i class="fas fa-arrow-left"></i> 返回首页
+                    </button>
+                </div>
+                <div>
+                    <div class="page-title">个人中心</div>
+                    <div class="page-subtitle">管理您的个人信息和诊断历史</div>
+                </div>
+                <div></div> <!-- 占位元素 -->
+            </div>
+            <div class="profile-container">
+                <div class="profile-form glass-enhanced floating-card">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <!-- 个人中心导航 -->
+                    <div class="profile-nav-container">
+                        <div class="profile-nav-btn active" data-tab="profile-info">个人信息</div>
+                        <div class="profile-nav-btn" data-tab="diagnosis-history">诊断历史</div>
+                        <div class="profile-nav-btn" data-tab="settings">设置</div>
+                    </div>
+                    <div class="profile-content active" id="profile-info">
+                        <div class="form-group">
+                            <label class="form-label">姓名</label>
+                            <input type="text" class="form-input advanced-input" id="profile-name" placeholder="请输入您的姓名">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">联系电话</label>
+                            <input type="tel" class="form-input advanced-input" id="profile-phone" placeholder="请输入您的联系电话">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">车牌号</label>
+                            <input type="text" class="form-input advanced-input" id="profile-plate" placeholder="请输入您的车牌号">
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat-card glass-enhanced">
+                                <div class="stat-value" id="diagnosis-count">0</div>
+                                <div class="stat-label">诊断次数</div>
+                            </div>
+                            <div class="stat-card glass-enhanced">
+                                <div class="stat-value" id="solved-count">0</div>
+                                <div class="stat-label">已解决问题</div>
+                            </div>
+                            <div class="stat-card glass-enhanced">
+                                <div class="stat-value" id="saved-count">0</div>
+                                <div class="stat-label">保存的诊断</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-block advanced-btn" id="save-profile-btn">保存个人信息</button>
+                        <button class="btn btn-block" id="logout-profile-btn" style="margin-top: 15px; background: var(--secondary);">退出登录</button>
+                    </div>
+                    <div class="profile-content" id="diagnosis-history">
+                        <h3 style="margin-bottom: 20px; color: var(--dark);">诊断历史记录</h3>
+                        <div class="history-list" id="diagnosis-history-list">
+                            <!-- 诊断历史将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                    <div class="profile-content" id="settings">
+                        <h3 style="margin-bottom: 20px; color: var(--dark);">应用设置</h3>
+                        <div class="settings-option">
+                            <div>
+                                <div class="settings-label">语音输入</div>
+                                <div class="settings-description">启用语音输入功能</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-option">
+                            <div>
+                                <div class="settings-label">声音提示</div>
+                                <div class="settings-description">回答时播放提示音</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-option">
+                            <div>
+                                <div class="settings-label">诊断建议</div>
+                                <div class="settings-description">根据历史数据提供维护建议</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <button class="btn btn-block advanced-btn" style="margin-top: 15px;" id="clear-data-btn">清除所有数据</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
